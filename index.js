@@ -2,15 +2,15 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 
+morgan.token('body', req => {
+  return JSON.stringify(req.body)
+})
+
 const app = express()
 app.use(cors())
 app.use(express.static('dist'))
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
-
-morgan.token('body', req => {
-  return JSON.stringify(req.body)
-})
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
@@ -75,7 +75,7 @@ app.post('/api/people', (req, res) => {
 
   if (persons.map((person) => person.name).includes(body.name)) {
     return res.status(400).json({ 
-      error: 'person alrerady in phonebook' 
+      error: 'person already in phonebook' 
     })
   }
 
