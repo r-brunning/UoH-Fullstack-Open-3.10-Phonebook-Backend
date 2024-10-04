@@ -35,11 +35,11 @@ let persons = [
     }
 ]
 
-app.get('/api/persons', (req, res) => {
+app.get('/', (req, res) => {
   res.json(persons)
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/:id', (req, res) => {
   const id = req.params.id
   const person = persons.find(person => person.id === id)
   person ? res.json(person) : res.status(404).end()
@@ -53,13 +53,13 @@ app.get('/info', (req, res) => {
   `)
 })
 
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/:id', (req, res) => {
   const id = req.params.id
   persons = persons.filter(person => person.id !== id)
   res.status(204).end()
 })
 
-app.post('/api/persons', (req, res) => {
+app.post('/', (req, res) => {
   const body = req.body
 
   if (!body.name) {
