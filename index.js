@@ -3,14 +3,19 @@ const morgan = require('morgan')
 const cors = require('cors')
 
 const app = express()
-
 app.use(cors())
+app.use(express.static('dist'))
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 morgan.token('body', req => {
   return JSON.stringify(req.body)
 })
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
 
 let persons = [
     { 
@@ -35,11 +40,11 @@ let persons = [
     }
 ]
 
-app.get('/', (req, res) => {
+app.get('/api/people', (req, res) => {
   res.json(persons)
 })
 
-app.get('/:id', (req, res) => {
+app.get('/api/people/:id', (req, res) => {
   const id = req.params.id
   const person = persons.find(person => person.id === id)
   person ? res.json(person) : res.status(404).end()
@@ -53,13 +58,13 @@ app.get('/info', (req, res) => {
   `)
 })
 
-app.delete('/:id', (req, res) => {
+app.delete('/api/people/:id', (req, res) => {
   const id = req.params.id
   persons = persons.filter(person => person.id !== id)
   res.status(204).end()
 })
 
-app.post('/', (req, res) => {
+app.post('/api/people', (req, res) => {
   const body = req.body
 
   if (!body.name) {
@@ -89,6 +94,8 @@ app.post('/', (req, res) => {
   persons = persons.concat(person)
   res.json(person)
 })
+
+app.use(unknownEndpoint)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
